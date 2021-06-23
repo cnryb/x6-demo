@@ -184,7 +184,10 @@ export default {
       container: document.getElementById("app-content"),
       // width: 800,
       height: 800,
-      selecting: true, //可选
+      selecting: {
+        enabled: true,
+        showNodeSelectionBox: true,
+      },
       snapline: {
         enabled: true,
         sharp: true,
@@ -223,6 +226,17 @@ export default {
       animation: true,
     });
 
+    this.graph.on("selection:changed", (args) => {
+      args.added.forEach((cell) => {
+        if (cell.isEdge()) {
+          cell.isEdge() && cell.attr("line/strokeDasharray", 5); //虚线蚂蚁线
+        }
+      });
+      args.removed.forEach((cell) => {
+        cell.isEdge() && cell.attr("line/strokeDasharray", 0); //正常线
+      });
+    });
+
     const $this = this;
     document.addEventListener("keyup", function (e) {
       if (e.key === "Delete") {
@@ -248,15 +262,17 @@ export default {
 </script>
 
 <style>
+.x6-edge-selected{
+  animation: 30s linear 0s infinite normal none running ant-line;
+}
+@keyframes ant-line {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
 .app {
   display: flex;
 }
-/* #app-stencil {
-  width: 20%;
-}
-#app-content {
-  width: 80%;
-} */
 
 #app-stencil {
   width: 20%;
