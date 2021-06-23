@@ -1,15 +1,24 @@
 <template>
-  <div>
-    <div id="app"></div>
+  <div class="app">
+    <div id="app-stencil">
+      <div data-functionId="123456" @mousedown="startDrag">123456</div>
+    </div>
+    <div id="app-content"></div>
   </div>
 </template>
 
 <script>
-import { Graph } from "@antv/x6";
+import { Graph, Addon } from "@antv/x6";
+const { Dnd } = Addon;
 
 export default {
-  name: "App",
   components: {},
+  data() {
+    return {
+      graph: null,
+      dnd: null,
+    };
+  },
   mounted() {
     const data = {
       // 节点
@@ -172,11 +181,21 @@ export default {
       ],
     };
     const graph = new Graph({
-      container: document.getElementById("app"),
-      width: 800,
-      height: 600,
+      container: document.getElementById("app-content"),
+      // width: 800,
+      height: 800,
+      snapline: {
+        enabled: true,
+        sharp: true,
+      },
       grid: true,
       connecting: {
+        allowBlank: false,
+        allowMulti: false,
+        allowLoop: false,
+        allowNode: false,
+        allowEdge: false,
+        allowPort: true,
         validateMagnet({ cell, magnet }) {
           const connectionCount = magnet.getAttribute("connection-count");
           if (!connectionCount) return true;
@@ -196,9 +215,64 @@ export default {
       },
     });
     graph.fromJSON(data);
+    graph.centerContent();
+    this.graph = graph;
+    this.dnd = new Dnd({
+      target: graph,
+      animation: true,
+    });
+  },
+  methods: {
+    startDrag(e) {
+      const target = e.currentTarget;
+      const functionId = target.getAttribute("data-functionId");
+      console.log(functionId);
+      const node = this.graph.createNode({
+        width: 100,
+        height: 40,
+      });
+
+      this.dnd.start(node, e);
+    },
   },
 };
 </script>
 
 <style>
+.app {
+  display: flex;
+}
+/* #app-stencil {
+  width: 20%;
+}
+#app-content {
+  width: 80%;
+} */
+
+#app-stencil {
+  width: 20%;
+  border: 1px solid #f0f0f0;
+  position: relative;
+}
+#app-stencil > div {
+  width: 100px;
+  height: 40px;
+  border: 2px solid #31d0c6;
+  text-align: center;
+  line-height: 40px;
+  margin: 16px;
+  cursor: move;
+}
+#app-content {
+  flex: 1;
+  height: 520px;
+  margin-left: 8px;
+  margin-right: 8px;
+  box-shadow: 0 0 10px 1px #e9e9e9;
+}
+
+.x6-graph-scroller {
+  border: 1px solid #f0f0f0;
+  margin-left: -1px;
+}
 </style>
