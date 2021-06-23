@@ -184,6 +184,7 @@ export default {
       container: document.getElementById("app-content"),
       // width: 800,
       height: 800,
+      selecting: true, //可选
       snapline: {
         enabled: true,
         sharp: true,
@@ -220,6 +221,14 @@ export default {
     this.dnd = new Dnd({
       target: graph,
       animation: true,
+    });
+
+    const $this = this;
+    document.addEventListener("keyup", function (e) {
+      if (e.key === "Delete") {
+        const cell = $this.graph.getSelectedCells();
+        $this.graph.removeCells(cell);
+      }
     });
   },
   methods: {
