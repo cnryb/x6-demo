@@ -200,6 +200,7 @@ export default {
         allowNode: false,
         allowEdge: false,
         allowPort: true,
+        snap: true,
         validateMagnet({ cell, magnet }) {
           const connectionCount = magnet.getAttribute("connection-count");
           if (!connectionCount) return true;
@@ -251,8 +252,74 @@ export default {
       const functionId = target.getAttribute("data-functionId");
       console.log(functionId);
       const node = this.graph.createNode({
-        width: 100,
-        height: 40,
+        width: 180, // Number，可选，节点大小的 width 值
+        height: 40, // Number，可选，节点大小的 height 值
+        label: "hello", // String，节点标签
+        ports: {
+          groups: {
+            in: {
+              position: "top",
+              label: {
+                position: "top", // 标签位置
+              },
+              attrs: {
+                circle: {
+                  r: 6,
+                  magnet: true,
+                  stroke: "#31d0c6",
+                  strokeWidth: 2,
+                  fill: "#fff",
+                  connectionCount: 1,
+                },
+              },
+            },
+            out: {
+              position: "bottom",
+              label: {
+                position: "bottom",
+              },
+              attrs: {
+                circle: {
+                  r: 6,
+                  magnet: true,
+                  stroke: "#31d0c6",
+                  strokeWidth: 2,
+                  fill: "#fff",
+                  connectionCount: 1,
+                },
+              },
+            },
+          },
+          items: [
+            {
+              id: "port1",
+              group: "in",
+              attrs: {
+                text: {
+                  text: "port1",
+                },
+              },
+            },
+            {
+              id: "port2",
+              group: "in",
+              attrs: {
+                text: {
+                  text: "port2",
+                },
+              },
+            },
+            {
+              id: "port4",
+              group: "out",
+              attrs: {
+                text: {
+                  text: "port4",
+                },
+              },
+            },
+          ],
+        },
       });
 
       this.dnd.start(node, e);
@@ -262,7 +329,7 @@ export default {
 </script>
 
 <style>
-.x6-edge-selected{
+.x6-edge-selected {
   animation: 30s linear 0s infinite normal none running ant-line;
 }
 @keyframes ant-line {
@@ -280,7 +347,7 @@ export default {
   position: relative;
 }
 #app-stencil > div {
-  width: 100px;
+  width: 180px;
   height: 40px;
   border: 2px solid #31d0c6;
   text-align: center;
