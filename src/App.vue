@@ -202,9 +202,9 @@ export default {
         allowPort: true,
         snap: true,
         validateMagnet({ cell, magnet }) {
-          const connectionCount = magnet.getAttribute("connection-count");
           const disableOut = magnet.getAttribute("disable-out");
           if (disableOut) return false;
+          const connectionCount = magnet.getAttribute("connection-count");
           if (!connectionCount) return true;
           const max = parseInt(connectionCount, 10);
           const outgoingEdges = graph.getOutgoingEdges(cell);
@@ -218,6 +218,11 @@ export default {
             });
           }
           return count < max;
+        },
+        validateConnection({ targetMagnet }) {
+          const disableIn = targetMagnet.getAttribute("disable-in");
+          if (disableIn) return false;
+          return true;
         },
       },
     });
@@ -262,6 +267,7 @@ export default {
                   strokeWidth: 2,
                   fill: "#fff",
                   connectionCount: 1,
+                  disableIn: true,
                 },
               },
             },
