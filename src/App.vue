@@ -201,10 +201,10 @@ export default {
         allowEdge: false,
         allowPort: true,
         snap: true,
-        validateMagnet(param) {
-          const { cell, magnet } = param;
-          // console.log(view);
+        validateMagnet({ cell, magnet }) {
           const connectionCount = magnet.getAttribute("connection-count");
+          const disableOut = magnet.getAttribute("disable-out");
+          if (disableOut) return false;
           if (!connectionCount) return true;
           const max = parseInt(connectionCount, 10);
           const outgoingEdges = graph.getOutgoingEdges(cell);
@@ -245,6 +245,7 @@ export default {
                   strokeWidth: 2,
                   fill: "#fff",
                   connectionCount: 1,
+                  disableOut: true,
                 },
               },
             },
