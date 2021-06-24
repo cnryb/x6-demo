@@ -182,8 +182,8 @@ export default {
     };
     const graph = new Graph({
       container: document.getElementById("app-content"),
-      // width: 800,
-      height: 800,
+      // width: "100%",
+      // height: "100%",
       selecting: {
         enabled: true,
         showNodeSelectionBox: true,
@@ -201,7 +201,9 @@ export default {
         allowEdge: false,
         allowPort: true,
         snap: true,
-        validateMagnet({ cell, magnet }) {
+        validateMagnet(param) {
+          const { cell, magnet } = param;
+          // console.log(view);
           const connectionCount = magnet.getAttribute("connection-count");
           if (!connectionCount) return true;
           const max = parseInt(connectionCount, 10);
@@ -225,37 +227,10 @@ export default {
     this.dnd = new Dnd({
       target: graph,
       animation: true,
-    });
-
-    this.graph.on("selection:changed", (args) => {
-      args.added.forEach((cell) => {
-        if (cell.isEdge()) {
-          cell.isEdge() && cell.attr("line/strokeDasharray", 5); //虚线蚂蚁线
-        }
-      });
-      args.removed.forEach((cell) => {
-        cell.isEdge() && cell.attr("line/strokeDasharray", 0); //正常线
-      });
-    });
-
-    const $this = this;
-    document.addEventListener("keyup", function (e) {
-      if (e.key === "Delete") {
-        const cell = $this.graph.getSelectedCells();
-        $this.graph.removeCells(cell);
-      }
-    });
-  },
-  methods: {
-    startDrag(e) {
-      const target = e.currentTarget;
-      const functionId = target.getAttribute("data-functionId");
-      console.log(functionId);
-      const node = this.graph.createNode({
-        width: 180, // Number，可选，节点大小的 width 值
-        height: 40, // Number，可选，节点大小的 height 值
-        label: "hello", // String，节点标签
-        ports: {
+      getDropNode(node) {
+        // 返回一个新的节点作为实际放置到画布上的节点
+        const n = node.clone();
+        const ports = {
           groups: {
             in: {
               position: "top",
@@ -319,7 +294,40 @@ export default {
               },
             },
           ],
-        },
+        };
+        n.prop("ports", ports);
+        return n;
+      },
+    });
+
+    this.graph.on("selection:changed", (args) => {
+      args.added.forEach((cell) => {
+        if (cell.isEdge()) {
+          cell.isEdge() && cell.attr("line/strokeDasharray", 5); //虚线蚂蚁线
+        }
+      });
+      args.removed.forEach((cell) => {
+        cell.isEdge() && cell.attr("line/strokeDasharray", 0); //正常线
+      });
+    });
+
+    const $this = this;
+    document.addEventListener("keyup", function (e) {
+      if (e.key === "Delete") {
+        const cell = $this.graph.getSelectedCells();
+        $this.graph.removeCells(cell);
+      }
+    });
+  },
+  methods: {
+    startDrag(e) {
+      const target = e.currentTarget;
+      const functionId = target.getAttribute("data-functionId");
+      const node = this.graph.createNode({
+        width: 180, // Number，可选，节点大小的 width 值
+        height: 40, // Number，可选，节点大小的 height 值
+        label: "hello", // String，节点标签
+        functionId,
       });
 
       this.dnd.start(node, e);
@@ -339,6 +347,7 @@ export default {
 }
 .app {
   display: flex;
+  height: 98vh;
 }
 
 #app-stencil {
@@ -357,7 +366,6 @@ export default {
 }
 #app-content {
   flex: 1;
-  height: 520px;
   margin-left: 8px;
   margin-right: 8px;
   box-shadow: 0 0 10px 1px #e9e9e9;
