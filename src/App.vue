@@ -1,6 +1,7 @@
 <template>
   <div class="app">
     <div id="app-stencil">
+      <button type="primary" @click="getData"> getData </button>
       <div data-functionId="123456" @mousedown="startDrag">123456</div>
     </div>
     <div id="app-content"></div>
@@ -327,6 +328,10 @@ export default {
     });
   },
   methods: {
+    getData() {
+      const obj = this.graph.toJSON();
+      console.log(JSON.stringify(obj));
+    },
     startDrag(e) {
       const target = e.currentTarget;
       const functionId = target.getAttribute("data-functionId");
