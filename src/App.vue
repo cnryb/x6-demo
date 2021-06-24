@@ -312,6 +312,8 @@ export default {
       args.added.forEach((cell) => {
         if (cell.isEdge()) {
           cell.isEdge() && cell.attr("line/strokeDasharray", 5); //虚线蚂蚁线
+        }else if (cell.isNode()) {
+          console.log('选中节点')
         }
       });
       args.removed.forEach((cell) => {
